@@ -49,9 +49,9 @@ destroyedbricks: dw 0
 lifecounter: dw 3 
 
 ; Strings
-lifeleft3:   db 10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lifes left : 3$"  
-lifeleft2:   db 13,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lifes left : 2$" 
-lifeleft1:   db 13,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lifes left : 1$" 
+life3:   db 10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lives left : 3$"  
+life2:   db 13,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lives left : 2$" 
+life1:   db 13,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,"   lives left : 1$" 
 speed:       db "      speed:$"
 dollar:      times 3 db '$' 
 
@@ -152,6 +152,7 @@ ShowFinalScore:
     pop ax
     ret
 
+; try to draw the ball
 ball: 
     mov cx, [ballx] 
     mov [balltempx], cx 
@@ -244,23 +245,23 @@ cubline:
     cmp al, 0 
     je black 
     cmp al, 15   
-    jae whit  
-    jmp next101
+    jae white  
+    jmp next
     
 secondblack:
     mov al, 222 
-    jmp next101 
-whit:   
+    jmp next 
+white:   
     cmp al, 32 
-    jae next101 
+    jae next 
     add al, 17 
-    jmp next101 
+    jmp next 
 gray:
     mov al, 6 
-    jmp next101 
+    jmp next 
 black: 
     mov al, 12
-next101: 
+next: 
 
     inc word [brickcounter] 
     call cube 
@@ -426,7 +427,7 @@ beeeeeeeeeeeeep:
     out 61h, al
     ret
 
-paintcorrection:
+paint_correction:
     mov ah, 0dh 
     mov cx, 0 
     mov [x], cx 
@@ -533,7 +534,7 @@ delright:
     pop cx 
     loop delright
 
-    call paintcorrection
+    call paint_correction
     ret 
 
 right: 
@@ -575,7 +576,7 @@ paintright:
     pop cx 
     loop paintright
 
-    call paintcorrection
+    call paint_correction
     ret  
 
 delball: 
@@ -1204,7 +1205,7 @@ realtimescore:
     cmp al, '$'             ; Check for end marker ($ symbol)
     je .print_digits
     mov ah, 0Eh             ; Teletype output
-    mov bx, 0007h           ; Page 0, white color
+    mov bx, 0007h           ; Page 0, whitee color
     int 10h
     jmp .print_label
 
@@ -1236,8 +1237,6 @@ realtimescore:
 start:
     mov dx, rules_msg
     call DisplayMessage
-    mov dx, rules_msg
-    call DisplayMessage
 
 ; Clears the screen and redraws bricks, paddle, and lives at the beginning of each round.
 printagain: 
@@ -1248,12 +1247,12 @@ printagain:
     mov word [score_accumulator], 0    
     mov word [destroyedbricks], 0      
 
-    mov dx, lifeleft3 
+    mov dx, life3 
     mov ah, 9 
     int 21h  
 
-    ; mov dx, speed  
-    ; int 21h 
+    mov dx, speed  
+    int 21h 
 
     mov cx, 138 
     mov [x], cx 
@@ -1411,12 +1410,12 @@ two2go:
     mov dl, 0 
     int 10h
 
-    mov dx, lifeleft2 
+    mov dx, life2 
     mov ah, 9 
     int 21h 
 
-    ; mov dx, speed   
-    ; int 21h
+    mov dx, speed   
+    int 21h
      
     dec word [lifecounter]
     jmp startgame
@@ -1428,12 +1427,12 @@ one2go:
     mov dl, 0 
     int 10h
 
-    mov dx, lifeleft1 
+    mov dx, life1 
     mov ah, 9 
     int 21h
 
-    ; mov dx, speed   
-    ; int 21h
+    mov dx, speed   
+    int 21h
      
     dec word [lifecounter]
     jmp startgame
@@ -1513,7 +1512,7 @@ DisplayMessage:
     int 21h
 
     ; 3. Wait for a key press
-    mov ah, 0ch  ; BIOS wait for input (similar to original code's wait)
+    mov ah, 0ch  ; BIOS wait for input
     mov al, 07h
     int 21h
 
